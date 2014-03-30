@@ -1,0 +1,19 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="base">
+
+<tal:block metal:fill-slot="content">
+    <p>
+        Dzięki <strong>Quizr</strong> sprawdzisz swoją wiedzę! 
+    </p>
+    <p>
+        Szybko odpowiadaj na pytania, bo z każdą chwilą zminejsza się premia
+        za prawidłową odowiedź.
+    </p>
+    <form method="POST" tal:condition="username">
+        <input type="submit" value="Start" />
+    </form>
+</tal:block>
+
+</html>
