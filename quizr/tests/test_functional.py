@@ -1,5 +1,6 @@
 import unittest
 
+
 class ViewTests(unittest.TestCase):
     def setUp(self):
         import os
