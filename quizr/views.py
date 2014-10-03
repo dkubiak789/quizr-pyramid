@@ -12,12 +12,13 @@ from pyramid.security import (
     authenticated_userid,
     remember,
     forget,
-    )
+)
 
 from .models import (
     DBSession,
     User,
-    )
+)
+
 
 @view_config(permission='view', route_name='main',
              renderer='templates/main.pt')
