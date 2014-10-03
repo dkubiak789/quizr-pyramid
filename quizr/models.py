@@ -4,7 +4,7 @@ from sqlalchemy import (
     Table,
     Column,
     ForeignKey,
-    )
+)
 
 from sqlalchemy.orm import (
     scoped_session,
@@ -14,13 +14,13 @@ from sqlalchemy.orm import (
     column_property,
     synonym,
     joinedload,
-    )
+)
 
 from sqlalchemy.types import (
     Integer,
     Unicode,
     UnicodeText,
-    )
+)
 
 from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
@@ -31,12 +31,13 @@ from pyramid.security import (
     Everyone,
     Authenticated,
     Allow,
-    )
+)
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
 crypt = cryptacular.bcrypt.BCRYPTPasswordManager()
+
 
 def hash_password(password):
     return unicode(crypt.encode(password))
