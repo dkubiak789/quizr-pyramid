@@ -8,7 +8,8 @@ from sqlalchemy import engine_from_config
 from .models import (
     DBSession,
     RootFactory,
-    )
+)
+
 
 def main(global_config, **settings):
     """
@@ -38,6 +39,7 @@ def main(global_config, **settings):
     config.scan()
 
     return config.make_wsgi_app()
+
 
 def addroutes(config):
     config.add_route('register', '/register')
