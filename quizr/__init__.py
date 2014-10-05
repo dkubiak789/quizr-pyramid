@@ -46,3 +46,5 @@ def addroutes(config):
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
     config.add_route('main', '/')
+    config.add_route('question', '/question')
+    config.add_route('result', '/result')

@@ -1,3 +1,5 @@
+import random
+import time
 import formencode
 
 from pyramid_simpleform import Form
@@ -7,6 +9,7 @@ from pyramid.view import view_config
 from pyramid.renderers import render
 
 from pyramid.httpexceptions import HTTPFound
+from pyramid.threadlocal import get_current_registry
 
 from pyramid.security import (
     authenticated_userid,
@@ -17,7 +20,10 @@ from pyramid.security import (
 from .models import (
     DBSession,
     User,
+    Result,
 )
+
+from .utils import ANSWER_IDS, get_questions
 
 
 @view_config(permission='view', route_name='main',
@@ -25,8 +31,17 @@ from .models import (
 def main_view(request):
     login_form = login_form_view(request)
 
+    username = authenticated_userid(request)
+    if request.method == 'POST' and username:
+        filename = get_current_registry().settings['questions_csv']
+        questions = get_questions(filename)
+        request.session['points'] = 0
+        request.session['to_ask'] = random.sample(questions, 5)
+    
+        return HTTPFound(location=request.route_url('question'))
+
     return {
-        'username': authenticated_userid(request),
+        'username': username,
         'toolbar': toolbar_view(request),
         'login_form': login_form,
     }
@@ -116,3 +131,69 @@ def toolbar_view(request):
 def login_form_view(request):
     logged_in = authenticated_userid(request)
     return render('templates/login.pt', {'loggedin': logged_in}, request)
+
+
+@view_config(permission='post', route_name='question',
+             renderer='templates/question.pt')
+def question_page(request):
+    """
+    Quiz question page - show question, handle answer.
+    """
+    session = request.session
+    if request.method == 'POST':
+        if request.POST.get('answer') == session['correct_answer']:
+            diff_time = time.time() - session['start_time']
+            if diff_time < 10:
+                session['points'] += 3
+            elif diff_time < 30:
+                session['points'] += 2
+            else:
+                session['points'] += 1
+        if not session['to_ask']:
+            return HTTPFound(location=request.route_url('result'))
+        else:
+            return HTTPFound(location=request.route_url('question'))
+    else:
+        if not session['to_ask']:
+            return HTTPFound(location=request.route_url('result'))
+        question = session['to_ask'].pop()
+        session['correct_answer'] = question[-1]
+        session['start_time'] = time.time()
+        return {
+            'question': question[0],
+            'answers': zip(ANSWER_IDS, question[1:-1]),
+            'toolbar': toolbar_view(request),
+        }
+
+
+@view_config(permission='post', route_name='result',
+             renderer='templates/result.pt')
+def result_page(request):
+    """
+    Last page - show results.
+    """
+    session = request.session
+    points = None
+    
+    if 'points' in session:
+        points = session['points']
+        del session['points']
+    
+        username = authenticated_userid(request)
+        user_id = DBSession.query(User).\
+                            filter(User.username==username).\
+                            first().user_id
+        
+        result = Result(user_id=user_id, points=points)
+        DBSession.add(result)
+    
+    results = DBSession.query(Result, User).\
+                        join(User).\
+                        order_by(Result.points.desc()).\
+                        all()
+
+    return {
+        'points': points,
+        'toolbar': toolbar_view(request),
+        'results': results,
+    }

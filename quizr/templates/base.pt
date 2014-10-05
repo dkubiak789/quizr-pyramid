@@ -19,12 +19,12 @@
 <body>
     <div id="main">
         <div id="header">
-            <h1>Quizr</h1>
+            <h1><a href="${request.route_url('main')}">Quizr</a></h1>
         </div>
         <div id="content">
             <div id="sidebar">
-                <div tal:replace="structure toolbar" />
-                <div tal:replace="structure login_form" />
+                <div tal:replace="structure toolbar|nothing" />
+                <div tal:replace="structure login_form|nothing" />
             </div>
 
             <tal:block metal:define-slot="content">

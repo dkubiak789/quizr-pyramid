@@ -82,6 +82,16 @@ class User(Base):
         return crypt.check(user.password, password)
 
 
+class Result(Base):
+    """
+    Quiz results.
+    """
+    __tablename__ = 'results'
+    result_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
+    points = Column(Integer)
+
+
 class RootFactory(object):
     __acl__ = [
         (Allow, Everyone, 'view'),

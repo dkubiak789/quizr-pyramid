@@ -1,0 +1,18 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="base">
+
+<tal:block metal:fill-slot="content">
+    <form method="POST">
+        <p>${question}</p>
+        <span tal:repeat="answer answers">
+            <input type="radio" name="answer" value="${answer[0]}" />
+            ${answer[1]}
+            <br /><br />
+        </span>
+        <input type="submit" value="Wyślij" />
+    </form>
+</tal:block>
+
+</html>

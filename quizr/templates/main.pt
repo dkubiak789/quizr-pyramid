@@ -14,6 +14,10 @@
     <form method="POST" tal:condition="username">
         <input type="submit" value="Start" />
     </form>
+    
+    <p>
+        <a href="${request.route_url('result')}">Wyniki</a>
+    </p>
 </tal:block>
 
 </html>
